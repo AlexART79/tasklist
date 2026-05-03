@@ -1,0 +1,13 @@
+{
+  "name": "hometask01",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,green \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
+    "build": "pnpm --filter backend build && pnpm --filter frontend build",
+    "test": "pnpm --filter backend test && pnpm --filter frontend test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

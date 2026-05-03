@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    env_file: ./packages/backend/.env
+    environment:
+      DATABASE_URL: /app/data/app.db
+    volumes:
+      - sqlite-data:/app/data
+    ports:
+      - "3001:3001"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: packages/frontend/Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  sqlite-data:

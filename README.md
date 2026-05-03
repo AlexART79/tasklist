@@ -1,0 +1,125 @@
+# Task Manager
+
+A full-stack task management app with Google + GitHub OAuth, real-time WebSocket notifications, and per-user list/task isolation.
+
+**Stack**: Express + TypeScript · React + Vite + TypeScript · Drizzle ORM + SQLite · WebSockets
+
+---
+
+## Prerequisites
+
+- Node.js 22 ([nvm](https://github.com/nvm-sh/nvm): `nvm use`)
+- pnpm 9 (`npm install -g pnpm`)
+- Docker + Docker Compose (for containerised run)
+
+---
+
+## Local run (native)
+
+```bash
+# 1. Install dependencies
+pnpm install
+
+# 2. Set up environment
+cp packages/backend/.env.example packages/backend/.env
+cp packages/frontend/.env.example packages/frontend/.env
+# Edit packages/backend/.env and fill in OAuth credentials
+
+# 3. Run database migrations
+pnpm --filter backend db:migrate
+
+# 4. Start both services
+pnpm dev
+```
+
+Frontend: http://localhost:5173  
+Backend API: http://localhost:3001
+
+---
+
+## Local run (Docker)
+
+```bash
+cp packages/backend/.env.example packages/backend/.env
+# Edit packages/backend/.env with real OAuth credentials
+
+docker compose up --build
+```
+
+Frontend: http://localhost:5173  
+The SQLite file is persisted in a Docker volume (`sqlite-data`).
+
+---
+
+## Google OAuth setup
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials
+2. Create an OAuth 2.0 Client ID (Web application)
+3. Add `http://localhost:3001/auth/google/callback` as an Authorized redirect URI
+4. Copy Client ID and Secret into `packages/backend/.env`
+
+## GitHub OAuth setup
+
+1. Go to GitHub → Settings → Developer settings → OAuth Apps → New OAuth App
+2. Set Authorization callback URL to `http://localhost:3001/auth/github/callback`
+3. Copy Client ID and Secret into `packages/backend/.env`
+
+---
+
+## Commands
+
+```bash
+pnpm dev                          # start both backend + frontend
+pnpm build                        # production build
+pnpm test                         # run all tests
+pnpm --filter backend test        # backend tests only
+pnpm --filter frontend test       # frontend tests only
+pnpm --filter backend db:generate # generate migration from schema changes
+pnpm --filter backend db:migrate  # apply pending migrations
+pnpm --filter backend db:seed     # seed demo data (added in Phase 6)
+```
+
+---
+
+## Environment variables
+
+| Variable | Package | Description |
+|---|---|---|
+| `PORT` | backend | HTTP server port (default: 3001) |
+| `DATABASE_URL` | backend | Path to SQLite file (default: `./dev.db`) |
+| `SESSION_SECRET` | backend | Secret for express-session |
+| `NODE_ENV` | backend | `development` or `production` |
+| `GOOGLE_CLIENT_ID` | backend | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | backend | Google OAuth client secret |
+| `GOOGLE_CALLBACK_URL` | backend | Google OAuth callback URL |
+| `GITHUB_CLIENT_ID` | backend | GitHub OAuth client ID |
+| `GITHUB_CLIENT_SECRET` | backend | GitHub OAuth client secret |
+| `GITHUB_CALLBACK_URL` | backend | GitHub OAuth callback URL |
+| `VITE_API_BASE_URL` | frontend | Backend base URL (used in production builds) |
+
+---
+
+## Delete strategy
+
+Deleting a list cascades to all its tasks. This is enforced at the database level via `ON DELETE CASCADE` on the `tasks.list_id` foreign key. There is no soft-delete or undo.
+
+---
+
+## WebSocket notifications
+
+After connecting, the client sends a `subscribe` message:
+```json
+{ "type": "subscribe", "payload": { "types": ["overdue", "due_soon"] } }
+```
+
+The server responds with a `notifications` message immediately and every 60 seconds:
+```json
+{ "type": "notifications", "payload": [{ "taskId": "...", "title": "...", "type": "overdue", "dueDate": "..." }] }
+```
+
+The client dismisses a notification with an `ack`:
+```json
+{ "type": "ack", "payload": { "taskId": "..." } }
+```
+
+Acked task IDs are suppressed for the duration of the session.
