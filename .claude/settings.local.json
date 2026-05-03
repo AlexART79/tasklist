@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"E:\\\\JsCourse\\\\ClaudeCodeTasks\\\\Hometask01\\\\packages\\\\frontend\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"E:\\\\JsCourse\\\\ClaudeCodeTasks\\\\Hometask01\\\\packages\\\\backend\\\\src\" -Recurse -Filter \"*.ts\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"E:\\\\JsCourse\\\\ClaudeCodeTasks\\\\Hometask01\\\\packages\\\\backend\\\\src\" -Recurse -Force)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Sort-Object FullName)"
+    ]
+  }
+}
