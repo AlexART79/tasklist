@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import UserMenu from '../components/UserMenu';
 
 export default function HomePage() {
   const [status, setStatus] = useState('loading...');
@@ -12,5 +13,10 @@ export default function HomePage() {
       .catch(() => setStatus('Backend unreachable'));
   }, []);
 
-  return <h1>{status}</h1>;
+  return (
+    <>
+      <UserMenu />
+      <h1>{status}</h1>
+    </>
+  );
 }
