@@ -7,7 +7,8 @@
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(Get-ChildItem -Path \"E:\\\\JsCourse\\\\ClaudeCodeTasks\\\\Hometask01\\\\packages\\\\backend\\\\src\" -Recurse -Force)",
       "Bash(Select-Object FullName, PSIsContainer)",
-      "Bash(Sort-Object FullName)"
+      "Bash(Sort-Object FullName)",
+      "Bash(Select-Object -First 50)"
     ]
   }
 }

@@ -71,13 +71,7 @@ Input validation uses `zod` on all API routes.
 
 ### Frontend
 
-- React Router for client-side routing; all non-auth routes redirect to login if unauthenticated
-- Vite dev proxy: `/api/*` and `/auth/*` forward to the backend
-- `src/pages/LoginPage.tsx` — OAuth login buttons
-- `src/pages/HomePage.tsx` — sidebar (lists) + main content (tasks)
-- `src/components/TaskModal.tsx` — create/edit modal with client-side validation
-- `src/hooks/useWebSocket.ts` — manages WS connection, dispatches notifications
-- `src/components/NotificationBell.tsx` — badge, panel, toast for WS notifications
+See [`packages/frontend/CLAUDE.md`](packages/frontend/CLAUDE.md) for frontend architecture, conventions, and styling.
 
 ### Database schema (Drizzle + SQLite)
 
@@ -118,7 +112,6 @@ Acked task IDs are suppressed in-memory for the session duration.
 - All mutating API endpoints verify the requesting user owns the resource (return 404 — not 403 — to avoid leaking existence).
 - Zod schemas live alongside their routes; do not share schemas between packages to keep the packages independently deployable.
 - Filter params on `GET /api/lists/:listId/tasks`: `search`, `status`, `priority`, `due_category` (`overdue`|`today`|`next7days`|`all`). Date logic runs server-side via SQLite date functions.
-- Active filters are persisted in URL query params.
 
 ## Docker
 
@@ -130,4 +123,4 @@ Multi-stage `Dockerfile` for backend (build → runtime). Frontend built by Vite
 
 ## Testing
 
-Vitest (or Jest) for both packages. Backend integration tests start an in-process server — no mocking of the database. WebSocket tests use an in-process WS client against a seeded DB. Frontend unit tests use React Testing Library.
+Vitest for both packages. Backend integration tests start an in-process server — no mocking of the database. WebSocket tests use an in-process WS client against a seeded DB. See [`packages/frontend/CLAUDE.md`](packages/frontend/CLAUDE.md) for frontend testing details.
