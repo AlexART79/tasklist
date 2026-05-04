@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import passport from 'passport';
 import { requireAuth } from '../middleware/requireAuth';
-import { db } from '../db';
+import { db as defaultDb } from '../db';
 import { users } from '../db/schema';
+import type { db as DbType } from '../db';
 
-export function buildAuthRouter() {
+export function buildAuthRouter(db: typeof DbType = defaultDb) {
   const router = Router();
 
   router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -38,19 +39,23 @@ export function buildAuthRouter() {
     router.get('/auth/test-login', async (req, res, next) => {
       try {
         const { eq } = await import('drizzle-orm');
+        const seed = req.query.seed as string | undefined;
+        const userId = seed ? `test-user-${seed}` : 'test-user-id';
+        const providerUserId = seed ? `google-test-id-${seed}` : 'google-test-id';
+        const email = seed ? `test-${seed}@example.com` : 'test@example.com';
         const [user] = await db
           .insert(users)
           .values({
-            id: 'test-user-id',
+            id: userId,
             provider: 'google',
-            providerUserId: 'google-test-id',
-            email: 'test@example.com',
+            providerUserId,
+            email,
             displayName: 'Test User',
             avatarUrl: null,
           })
           .onConflictDoUpdate({
             target: users.id,
-            set: { email: 'test@example.com' },
+            set: { email },
           })
           .returning();
         req.login(user, (err) => (err ? next(err) : res.sendStatus(200)));

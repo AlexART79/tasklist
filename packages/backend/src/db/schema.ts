@@ -15,3 +15,17 @@ export const users = sqliteTable(
   },
   (t) => [uniqueIndex('uniq_provider_uid').on(t.provider, t.providerUserId)],
 );
+
+export const lists = sqliteTable('lists', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  name: text('name').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
