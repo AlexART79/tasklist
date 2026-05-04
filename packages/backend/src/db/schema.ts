@@ -29,3 +29,28 @@ export const lists = sqliteTable('lists', {
     .notNull()
     .$defaultFn(() => new Date()),
 });
+
+export const tasks = sqliteTable('tasks', {
+  id: text('id').primaryKey(),
+  listId: text('list_id')
+    .notNull()
+    .references(() => lists.id, { onDelete: 'cascade' }),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  title: text('title').notNull(),
+  description: text('description'),
+  status: text('status', { enum: ['todo', 'in_progress', 'done'] })
+    .notNull()
+    .default('todo'),
+  dueDate: text('due_date'),
+  priority: text('priority', { enum: ['low', 'medium', 'high'] })
+    .notNull()
+    .default('medium'),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});

@@ -10,7 +10,10 @@
       "Bash(Sort-Object FullName)",
       "Bash(Select-Object -First 50)",
       "Bash(pnpm --filter frontend build)",
-      "Bash(pnpm --filter backend test)"
+      "Bash(pnpm --filter backend test)",
+      "Bash(pnpm --filter backend tsc --noEmit)",
+      "Bash(pnpm --filter frontend tsc --noEmit)",
+      "Bash(npx tsc *)"
     ]
   }
 }

@@ -15,6 +15,13 @@
       "when": 1777883163288,
       "tag": "0001_low_luckman",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1777895131328,
+      "tag": "0002_blushing_whiplash",
+      "breakpoints": true
     }
   ]
 }

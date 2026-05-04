@@ -9,6 +9,7 @@ import { buildGoogleStrategy } from './auth/googleStrategy';
 import { buildGithubStrategy } from './auth/githubStrategy';
 import { buildAuthRouter } from './routes/auth';
 import { buildListsRouter } from './routes/lists';
+import { buildTasksRouter } from './routes/tasks';
 import { sqlite as defaultSqlite, db as defaultDb } from './db';
 
 interface AppOptions {
@@ -33,6 +34,7 @@ export function buildApp(options?: AppOptions) {
 
   app.use(buildAuthRouter(dbInst));
   app.use(buildListsRouter(dbInst));
+  app.use(buildTasksRouter(dbInst));
 
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });

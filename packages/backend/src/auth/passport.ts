@@ -13,7 +13,7 @@ export function configurePassport() {
     done(null, user.id);
   });
 
-  passport.deserializeUser(async (req: Express.Request, id: string, done) => {
+  passport.deserializeUser(async (req: import('http').IncomingMessage, id: string, done: (err: unknown, user?: Express.User | false | null) => void) => {
     try {
       const db: typeof DbType = (req as any).app.get('db');
       const user = await db.query.users.findFirst({ where: eq(users.id, id) });

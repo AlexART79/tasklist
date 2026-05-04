@@ -15,6 +15,17 @@ packages/frontend/  — React + Vite + TypeScript SPA
 
 Root `package.json` uses `pnpm` workspaces. Scripts at root delegate to both packages.
 
+## Windows terminal rules
+
+This project runs on **Windows**. Follow these rules for every terminal command:
+
+- **Use PowerShell tool** for commands that need a directory change — `Set-Location "E:\path"` not `cd`.
+- **Never use backslash Windows paths in the Bash tool** — `cd E:\foo` silently fails. Use PowerShell instead.
+- **Prefer pnpm workspace filters** over changing directories: `pnpm --filter backend tsc --noEmit` runs from the repo root without any `cd`.
+- **TypeScript checks**: use `pnpm typecheck` (root) or `pnpm --filter backend typecheck` / `pnpm --filter frontend typecheck`. Never invoke `npx tsc` directly.
+- **Never run two PowerShell commands in parallel when either might error** — a failed first call cancels the second. Run sequentially with `&&` or in separate calls.
+- **POSIX paths (`/e/...`) in Bash work** but are fragile; prefer PowerShell or workspace-filter commands from the repo root.
+
 ## Commands
 
 ```bash
@@ -31,6 +42,11 @@ pnpm build
 pnpm test                          # all packages
 pnpm --filter backend test         # backend only
 pnpm --filter frontend test        # frontend only
+
+# TypeScript type check (no emit)
+pnpm typecheck                     # all packages
+pnpm --filter backend typecheck    # backend only
+pnpm --filter frontend typecheck   # frontend only
 
 # DB migrations
 pnpm --filter backend db:migrate
