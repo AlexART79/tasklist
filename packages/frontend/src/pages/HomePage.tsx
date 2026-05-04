@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import UserMenu from '../components/UserMenu';
+import NotificationBell from '../components/NotificationBell';
+import NotificationToast from '../components/NotificationToast';
 import Sidebar from '../components/Sidebar';
 import TaskList from '../components/TaskList';
 
@@ -17,7 +19,10 @@ export default function HomePage() {
           </div>
           <span className="text-sm font-semibold text-slate-900">Task Manager</span>
         </div>
-        <UserMenu />
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <UserMenu />
+        </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
@@ -37,6 +42,7 @@ export default function HomePage() {
           )}
         </main>
       </div>
+      <NotificationToast />
     </div>
   );
 }

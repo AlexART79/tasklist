@@ -96,6 +96,7 @@ pnpm --filter backend db:seed     # seed demo data (added in Phase 6)
 | `GITHUB_CLIENT_SECRET` | backend | GitHub OAuth client secret |
 | `GITHUB_CALLBACK_URL` | backend | GitHub OAuth callback URL |
 | `VITE_API_BASE_URL` | frontend | Backend base URL (used in production builds) |
+| `WS_INTERVAL_MS` | backend | WebSocket notification push interval in ms (default: 60000) |
 
 ---
 
@@ -112,7 +113,7 @@ After connecting, the client sends a `subscribe` message:
 { "type": "subscribe", "payload": { "types": ["overdue", "due_soon"] } }
 ```
 
-The server responds with a `notifications` message immediately and every 60 seconds:
+The server responds with a `notifications` message immediately on connect and then every 60 seconds (configurable via `WS_INTERVAL_MS` env var):
 ```json
 { "type": "notifications", "payload": [{ "taskId": "...", "title": "...", "type": "overdue", "dueDate": "..." }] }
 ```

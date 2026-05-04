@@ -20,6 +20,12 @@ importers:
       better-sqlite3-session-store:
         specifier: ^0.1.0
         version: 0.1.0
+      cookie:
+        specifier: ^1.1.1
+        version: 1.1.1
+      cookie-signature:
+        specifier: ^1.2.2
+        version: 1.2.2
       dotenv:
         specifier: ^16.4.5
         version: 16.6.1
@@ -41,6 +47,9 @@ importers:
       passport-google-oauth20:
         specifier: ^2.0.0
         version: 2.0.0
+      ws:
+        specifier: ^8.20.0
+        version: 8.20.0
       zod:
         specifier: ^4.4.2
         version: 4.4.2
@@ -48,6 +57,12 @@ importers:
       '@types/better-sqlite3':
         specifier: ^7.6.12
         version: 7.6.13
+      '@types/cookie':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@types/cookie-signature':
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.25
@@ -69,6 +84,9 @@ importers:
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.3
+      '@types/ws':
+        specifier: ^8.18.1
+        version: 8.18.1
       drizzle-kit:
         specifier: ^0.30.0
         version: 0.30.6
@@ -1033,6 +1051,13 @@ packages:
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
+  '@types/cookie-signature@1.1.2':
+    resolution: {integrity: sha512-2OhrZV2LVnUAXklUFwuYUTokalh/dUb8rqt70OW6ByMSxYpauPZ+kfNLknX3aJyjY5iu8i3cUyoLZP9Fn37tTg==}
+
+  '@types/cookie@1.0.0':
+    resolution: {integrity: sha512-mGFXbkDQJ6kAXByHS7QAggRXgols0mAdP4MuXgloGY1tXokvzaFFM4SMqWvf7AH0oafI7zlFJwoGWzmhDqTZ9w==}
+    deprecated: This is a stub types definition. cookie provides its own type definitions, so you do not need this installed.
+
   '@types/cookiejar@2.1.5':
     resolution: {integrity: sha512-he+DHOWReW0nghN24E1WUqM0efK4kI9oTqDm6XmK8ZPe2djZ90BSNdGnIyCLzCPw7/pogPlGbzI2wHGGmi4O/Q==}
 
@@ -1118,6 +1143,9 @@ packages:
 
   '@types/supertest@6.0.3':
     resolution: {integrity: sha512-8WzXq62EXFhJ7QsH3Ocb/iKQ/Ty9ZVWnVzoTKc9tyyFRRF3a74Tk2+TLFgaFFw364Ere+npzHKEJ6ga2LzIL7w==}
+
+  '@types/ws@8.18.1':
+    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   '@typescript-eslint/eslint-plugin@8.59.1':
     resolution: {integrity: sha512-BOziFIfE+6osHO9FoJG4zjoHUcvI7fTNBSpdAwrNH0/TLvzjsk2oo8XSSOT2HhqUyhZPfHv4UOffoJ9oEEQ7Ag==}
@@ -1419,6 +1447,10 @@ packages:
   cookie@0.7.2:
     resolution: {integrity: sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==}
     engines: {node: '>= 0.6'}
+
+  cookie@1.1.1:
+    resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
+    engines: {node: '>=18'}
 
   cookiejar@2.1.4:
     resolution: {integrity: sha512-LDx6oHrK+PhzLKJU9j5S7/Y3jM/mUHvD/DeI1WQmJn652iPC5Y4TBzC9l+5OMOXlyTTA+SmVUPm0HQUwpD5Jqw==}
@@ -3541,6 +3573,14 @@ snapshots:
     dependencies:
       '@types/node': 22.19.17
 
+  '@types/cookie-signature@1.1.2':
+    dependencies:
+      '@types/node': 22.19.17
+
+  '@types/cookie@1.0.0':
+    dependencies:
+      cookie: 1.1.1
+
   '@types/cookiejar@2.1.5': {}
 
   '@types/esrecurse@4.3.1': {}
@@ -3648,6 +3688,10 @@ snapshots:
     dependencies:
       '@types/methods': 1.1.4
       '@types/superagent': 8.1.9
+
+  '@types/ws@8.18.1':
+    dependencies:
+      '@types/node': 22.19.17
 
   '@typescript-eslint/eslint-plugin@8.59.1(@typescript-eslint/parser@8.59.1(eslint@10.3.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.3.0(jiti@2.6.1))(typescript@5.9.3)':
     dependencies:
@@ -4006,6 +4050,8 @@ snapshots:
   cookie-signature@1.2.2: {}
 
   cookie@0.7.2: {}
+
+  cookie@1.1.1: {}
 
   cookiejar@2.1.4: {}
 
