@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { eq, and, like, or, sql } from 'drizzle-orm';
+import { eq, and, like, or, sql, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/requireAuth';
 import { lists, tasks } from '../db/schema';
@@ -29,12 +29,19 @@ export function buildTasksRouter(db: typeof DbType) {
         .where(and(eq(lists.id, listId), eq(lists.userId, userId)));
       if (!list) return res.sendStatus(404);
 
-      const { status, priority, due_category, search } = req.query as Record<string, string>;
+      const rawStatus   = req.query.status;
+      const rawPriority = req.query.priority;
+      const { due_category, search } = req.query as Record<string, string>;
+
+      const statusValues   = Array.isArray(rawStatus)   ? rawStatus   : rawStatus   ? [rawStatus as string]   : [];
+      const priorityValues = Array.isArray(rawPriority) ? rawPriority : rawPriority ? [rawPriority as string] : [];
 
       const conditions = [eq(tasks.listId, listId)];
 
-      if (status) conditions.push(eq(tasks.status, status as 'todo' | 'in_progress' | 'done'));
-      if (priority) conditions.push(eq(tasks.priority, priority as 'low' | 'medium' | 'high'));
+      if (statusValues.length > 0)
+        conditions.push(inArray(tasks.status, statusValues as ('todo' | 'in_progress' | 'done')[]));
+      if (priorityValues.length > 0)
+        conditions.push(inArray(tasks.priority, priorityValues as ('low' | 'medium' | 'high')[]));
       if (search) {
         const term = `%${search}%`;
         conditions.push(or(like(tasks.title, term), like(tasks.description, term))!);

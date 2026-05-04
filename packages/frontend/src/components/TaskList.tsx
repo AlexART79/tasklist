@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import type { Task } from '../api/tasks';
 import { fetchTasks, updateTask, deleteTask } from '../api/tasks';
 import TaskModal from './TaskModal';
+import { useTaskFilters } from '../hooks/useTaskFilters';
+import TaskFilters from './TaskFilters';
 
 type Props = { listId: string };
 
@@ -43,12 +45,14 @@ export default function TaskList({ listId }: Props) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
+  const { filterState, activeFilters, hasActiveFilters, setSearch, setStatus, setPriority, setDueCategory, clearFilters } = useTaskFilters();
+
   useEffect(() => {
     setLoading(true);
-    fetchTasks(listId)
+    fetchTasks(listId, activeFilters)
       .then(setTasks)
       .finally(() => setLoading(false));
-  }, [listId]);
+  }, [listId, activeFilters.search, activeFilters.status, activeFilters.priority, activeFilters.due_category]);
 
   function handleSaved(saved: Task) {
     setTasks((prev) => {
@@ -83,17 +87,9 @@ export default function TaskList({ listId }: Props) {
     setTasks((prev) => prev.filter((t) => t.id !== task.id));
   }
 
-  if (loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <span className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <div className="flex-1 flex flex-col overflow-auto">
-      <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0">
+      <div className="flex items-center justify-between px-6 pt-6 pb-3 shrink-0">
         <h2 className="text-sm font-semibold text-slate-900">Tasks</h2>
         <button
           onClick={openCreate}
@@ -106,14 +102,31 @@ export default function TaskList({ listId }: Props) {
         </button>
       </div>
 
-      {tasks.length === 0 ? (
+      <TaskFilters
+        filterState={filterState}
+        hasActiveFilters={hasActiveFilters}
+        onSearchChange={setSearch}
+        onStatusToggle={setStatus}
+        onPriorityToggle={setPriority}
+        onDueCategoryChange={setDueCategory}
+        onClear={clearFilters}
+      />
+
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <span className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+        </div>
+      ) : tasks.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
           <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
-          <p className="text-slate-500 text-sm">No tasks in this list — add one to get started.</p>
+          {hasActiveFilters
+            ? <p className="text-slate-500 text-sm">No tasks match your filters.</p>
+            : <p className="text-slate-500 text-sm">No tasks in this list — add one to get started.</p>
+          }
         </div>
       ) : (
         <ul className="flex flex-col gap-2 px-6 pb-6">
