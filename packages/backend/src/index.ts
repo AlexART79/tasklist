@@ -1,9 +1,11 @@
 import 'dotenv/config';
 import http from 'http';
 import { app } from './app';
-import { sqlite, db } from './db';
+import { sqlite, db, runMigrations } from './db';
 import { buildWsHandler } from './ws/handler';
 import { logger } from './logger';
+
+runMigrations();
 
 const port = process.env.PORT ?? 3001;
 const server = http.createServer(app);
