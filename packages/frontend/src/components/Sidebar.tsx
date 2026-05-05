@@ -94,12 +94,12 @@ export default function Sidebar({ selectedListId, onSelect, mobileOpen = false, 
 
   const panel = (
     <aside
-      className={`flex h-full w-72 max-w-[85vw] shrink-0 flex-col border-r border-slate-200 bg-white shadow-xl transition-transform dark:border-slate-800/80 dark:bg-[linear-gradient(180deg,#070d1d_0%,#020617_72%)] md:w-64 md:shadow-none ${
+      className={`flex h-full w-72 max-w-[85vw] shrink-0 flex-col bg-white shadow-[20px_0_48px_-42px_rgba(15,23,42,0.6)] transition-transform dark:bg-[linear-gradient(180deg,#071023_0%,#020617_70%)] dark:shadow-[24px_0_56px_-42px_rgba(99,102,241,0.5)] md:w-64 ${
         mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       }`}
       aria-label="Lists"
     >
-      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-800/80 dark:bg-slate-950/25">
+      <div className="flex items-center justify-between bg-gradient-to-b from-slate-50/90 to-white/30 px-4 py-3 dark:from-slate-900/55 dark:to-slate-950/10">
         <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-300">Lists</span>
         <button
           type="button"
@@ -217,7 +217,7 @@ export default function Sidebar({ selectedListId, onSelect, mobileOpen = false, 
         )}
       </div>
 
-      <div className="border-t border-slate-200 bg-slate-50/60 p-3 dark:border-slate-800/80 dark:bg-slate-950/45">
+      <div className="bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent p-3 pt-5 shadow-[0_-18px_28px_-30px_rgba(15,23,42,0.65)] dark:from-slate-950 dark:via-slate-950/85 dark:shadow-[0_-22px_34px_-32px_rgba(99,102,241,0.45)]">
         <button
           type="button"
           className="flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-indigo-600 transition-colors hover:bg-indigo-50 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:text-indigo-200 dark:hover:bg-indigo-500/15 dark:hover:text-indigo-50"

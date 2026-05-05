@@ -17,7 +17,7 @@ export default function HomePage() {
 
   return (
     <div className="flex h-dvh flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-      <header className="relative z-40 h-14 shrink-0 border-b border-slate-200 bg-white/95 px-3 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 sm:px-4 lg:px-6">
+      <header className="relative z-40 h-14 shrink-0 bg-white/95 px-3 shadow-[0_12px_32px_-30px_rgba(15,23,42,0.7)] backdrop-blur dark:bg-slate-950/95 dark:shadow-[0_18px_44px_-30px_rgba(99,102,241,0.55)] sm:px-4 lg:px-6">
         <div className="mx-auto flex h-full w-full max-w-[1800px] items-center justify-between gap-4 sm:gap-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
