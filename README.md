@@ -4,6 +4,8 @@ A full-stack task management app with Google + GitHub OAuth, real-time WebSocket
 
 **Stack**: Express + TypeScript · React + Vite + TypeScript · Drizzle ORM + SQLite · WebSockets
 
+API details are documented in [docs/api.md](docs/api.md).
+
 ---
 
 ## Prerequisites
@@ -71,13 +73,33 @@ The SQLite file is persisted in a Docker volume (`sqlite-data`).
 ```bash
 pnpm dev                          # start both backend + frontend
 pnpm build                        # production build
+pnpm typecheck                    # TypeScript checks for both packages
 pnpm test                         # run all tests
+pnpm db:seed                      # seed demo user, lists, and tasks
 pnpm --filter backend test        # backend tests only
 pnpm --filter frontend test       # frontend tests only
 pnpm --filter backend db:generate # generate migration from schema changes
 pnpm --filter backend db:migrate  # apply pending migrations
-pnpm --filter backend db:seed     # seed demo data (added in Phase 6)
+pnpm --filter backend db:seed     # backend seed command
 ```
+
+---
+
+## Demo seed data
+
+Run the seed command after migrations:
+
+```bash
+pnpm db:seed
+```
+
+The script is idempotent for seed-owned rows. It seeds an existing user matching `SEED_EMAIL` when found; otherwise it creates a mock demo user (`demo@example.com` by default). It creates two lists and tasks covering overdue, due-soon, future, no-date, done, and mixed priority/status cases. Override the demo email with:
+
+```bash
+SEED_EMAIL=reviewer@example.com pnpm db:seed
+```
+
+The app still requires an authenticated browser session. For UI exploration with real OAuth, sign in once, then rerun the seed command with `SEED_EMAIL` set to that account email.
 
 ---
 
@@ -179,3 +201,9 @@ The client dismisses a notification with an `ack`:
 ```
 
 Acked task IDs are suppressed for the duration of the session.
+
+---
+
+## Theme
+
+The UI supports light and dark themes. On first visit it follows the browser/OS color-scheme preference. After the user toggles the theme, the selected value is stored in `localStorage` under `task-manager-theme` and is restored on later visits.

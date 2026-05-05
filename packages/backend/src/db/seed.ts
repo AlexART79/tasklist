@@ -3,7 +3,22 @@ import { eq, inArray } from 'drizzle-orm';
 import { db } from './index';
 import { users, lists, tasks } from './schema';
 
-const SEED_EMAIL = process.env.SEED_EMAIL ?? 'alexart79@gmail.com';
+const DEMO_USER_ID = 'seed-demo-user';
+const DEMO_EMAIL = process.env.SEED_EMAIL ?? 'demo@example.com';
+const DEMO_PROVIDER_USER_ID = 'mock-provider-token-demo';
+const SEED_LIST_IDS = ['seed-demo-list-work', 'seed-demo-list-personal'];
+const SEED_TASK_IDS = [
+  'seed-overdue-1',
+  'seed-overdue-2',
+  'seed-today',
+  'seed-tomorrow',
+  'seed-in-3-days',
+  'seed-future',
+  'seed-done',
+  'seed-personal-overdue',
+  'seed-personal-due-soon',
+  'seed-personal-no-date',
+];
 
 function daysFromNow(n: number): string {
   const d = new Date();
@@ -12,39 +27,47 @@ function daysFromNow(n: number): string {
 }
 
 async function seed() {
-  const [user] = await db.select().from(users).where(eq(users.email, SEED_EMAIL));
+  let [user] = await db.select().from(users).where(eq(users.email, DEMO_EMAIL));
 
-  if (!user) {
-    console.error(`No user found with email "${SEED_EMAIL}".`);
-    console.error('Log in via OAuth first, or override the email: SEED_EMAIL=you@example.com pnpm --filter backend db:seed');
-    process.exit(1);
+  if (user) {
+    console.log(`Seeding existing user: ${user.displayName ?? user.email ?? user.id}`);
+  } else {
+    [user] = await db
+      .insert(users)
+      .values({
+        id: DEMO_USER_ID,
+        provider: 'google',
+        providerUserId: DEMO_PROVIDER_USER_ID,
+        email: DEMO_EMAIL,
+        displayName: 'Demo User',
+        avatarUrl: null,
+      })
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          provider: 'google',
+          providerUserId: DEMO_PROVIDER_USER_ID,
+          email: DEMO_EMAIL,
+          displayName: 'Demo User',
+          avatarUrl: null,
+        },
+      })
+      .returning();
+    console.log(`Created demo user: ${user.displayName ?? user.email ?? user.id}`);
   }
-  console.log(`Seeding for user: ${user.displayName ?? user.email ?? user.id}`);
 
-  // Create a dedicated demo list (idempotent: same id each run)
-  const listId = `seed-demo-list-${user.id}`;
-  await db
-    .insert(lists)
-    .values({ id: listId, userId: user.id, name: 'Notification Demo' })
-    .onConflictDoNothing();
+  await db.delete(tasks).where(inArray(tasks.id, SEED_TASK_IDS));
+  await db.delete(lists).where(inArray(lists.id, SEED_LIST_IDS));
 
-  // Remove previous seed tasks so the script is idempotent
-  await db.delete(tasks).where(
-    inArray(tasks.id, [
-      'seed-overdue-1',
-      'seed-overdue-2',
-      'seed-today',
-      'seed-tomorrow',
-      'seed-in-3-days',
-      'seed-future',
-      'seed-done',
-    ]),
-  );
+  await db.insert(lists).values([
+    { id: 'seed-demo-list-work', userId: user.id, name: 'Work Launch' },
+    { id: 'seed-demo-list-personal', userId: user.id, name: 'Personal Admin' },
+  ]);
 
   await db.insert(tasks).values([
     {
       id: 'seed-overdue-1',
-      listId,
+      listId: 'seed-demo-list-work',
       userId: user.id,
       title: 'Fix critical login bug',
       description: 'Users cannot log in on Safari — must be resolved.',
@@ -54,7 +77,7 @@ async function seed() {
     },
     {
       id: 'seed-overdue-2',
-      listId,
+      listId: 'seed-demo-list-work',
       userId: user.id,
       title: 'Write quarterly report',
       description: null,
@@ -64,7 +87,7 @@ async function seed() {
     },
     {
       id: 'seed-today',
-      listId,
+      listId: 'seed-demo-list-work',
       userId: user.id,
       title: 'Deploy staging build',
       description: null,
@@ -74,7 +97,7 @@ async function seed() {
     },
     {
       id: 'seed-tomorrow',
-      listId,
+      listId: 'seed-demo-list-work',
       userId: user.id,
       title: 'Code review for PR #42',
       description: null,
@@ -84,7 +107,7 @@ async function seed() {
     },
     {
       id: 'seed-in-3-days',
-      listId,
+      listId: 'seed-demo-list-work',
       userId: user.id,
       title: 'Update dependencies',
       description: null,
@@ -94,7 +117,7 @@ async function seed() {
     },
     {
       id: 'seed-future',
-      listId,
+      listId: 'seed-demo-list-work',
       userId: user.id,
       title: 'Plan next sprint',
       description: null,
@@ -104,7 +127,7 @@ async function seed() {
     },
     {
       id: 'seed-done',
-      listId,
+      listId: 'seed-demo-list-work',
       userId: user.id,
       title: 'Set up CI pipeline',
       description: 'Already shipped — should not appear in notifications.',
@@ -112,14 +135,46 @@ async function seed() {
       dueDate: daysFromNow(-10),
       priority: 'high',
     },
+    {
+      id: 'seed-personal-overdue',
+      listId: 'seed-demo-list-personal',
+      userId: user.id,
+      title: 'Renew passport paperwork',
+      description: 'Collect documents and submit the renewal form.',
+      status: 'todo',
+      dueDate: daysFromNow(-1),
+      priority: 'high',
+    },
+    {
+      id: 'seed-personal-due-soon',
+      listId: 'seed-demo-list-personal',
+      userId: user.id,
+      title: 'Book dentist appointment',
+      description: null,
+      status: 'in_progress',
+      dueDate: daysFromNow(2),
+      priority: 'medium',
+    },
+    {
+      id: 'seed-personal-no-date',
+      listId: 'seed-demo-list-personal',
+      userId: user.id,
+      title: 'Sort photo backups',
+      description: 'Move old exports into cloud storage.',
+      status: 'todo',
+      dueDate: null,
+      priority: 'low',
+    },
   ]);
 
+  console.log('Seeded lists: Work Launch, Personal Admin');
   console.log('Seeded tasks:');
-  console.log('  2 overdue  (should trigger notifications)');
-  console.log('  3 due soon — today, tomorrow, in 3 days  (should trigger notifications)');
+  console.log('  3 overdue  (should trigger notifications)');
+  console.log('  4 due soon — today, tomorrow, in 2 days, in 3 days  (should trigger notifications)');
   console.log('  1 future   — in 14 days  (no notification yet)');
+  console.log('  1 no date  (no notification)');
   console.log('  1 done     — overdue but status=done  (no notification)');
-  console.log('\nOpen the app and the bell icon should show 5 notifications.');
+  console.log('\nOpen the app as the demo user or inspect the DB to review seeded data.');
 }
 
 seed()

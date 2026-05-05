@@ -27,7 +27,8 @@ const PRIORITY_OPTIONS = [
 
 const selectBase =
   'rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 ' +
-  'outline-none focus:ring-2 focus:ring-indigo-500 transition-colors cursor-pointer';
+  'outline-none focus:ring-2 focus:ring-indigo-500 transition-colors cursor-pointer ' +
+  'hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800';
 
 export default function TaskFilters({
   filterState,
@@ -42,10 +43,10 @@ export default function TaskFilters({
   const [openPriority, setOpenPriority] = useState(false);
 
   return (
-    <div className="flex items-center gap-2 px-6 pb-3 flex-wrap shrink-0">
-      <div className="relative flex-1 min-w-48">
+    <div className="flex shrink-0 flex-wrap items-center gap-2 px-3 pb-3 sm:px-6">
+      <div className="relative min-w-0 flex-[1_1_14rem]">
         <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"
+          className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
         >
           <path strokeLinecap="round" strokeLinejoin="round"
@@ -56,9 +57,10 @@ export default function TaskFilters({
           value={filterState.search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search tasks…"
-          className="w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 py-1.5 text-sm
-                     text-slate-700 placeholder:text-slate-400 outline-none
-                     focus:ring-2 focus:ring-indigo-500 transition-colors"
+          className="w-full rounded-lg border border-slate-200 bg-white py-1.5 pl-9 pr-3 text-sm
+                     text-slate-700 outline-none transition-colors placeholder:text-slate-400
+                     hover:bg-slate-50 focus:ring-2 focus:ring-indigo-500 dark:border-slate-700
+                     dark:bg-slate-900 dark:text-slate-200 dark:placeholder:text-slate-500 dark:hover:bg-slate-800"
         />
       </div>
 
@@ -95,9 +97,11 @@ export default function TaskFilters({
         <button
           onClick={onClear}
           className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium
-                     text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                     text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500
+                     dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
         >
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
           Clear filters

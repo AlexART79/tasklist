@@ -28,18 +28,18 @@ export default function NotificationToast() {
     return () => clearTimeout(timer);
   }, [notifications, notificationPanelOpen]);
 
-  if (toasts.length === 0) return null;
+  if (notificationPanelOpen || toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+    <div className="fixed bottom-4 right-4 z-50 flex max-w-[calc(100vw-2rem)] flex-col gap-2">
       {toasts.map((t) => (
         <div
           key={t.taskId}
-          className="flex items-start gap-3 rounded-xl bg-slate-900 text-white px-4 py-3 shadow-lg max-w-xs"
+          className="flex max-w-xs items-start gap-3 rounded-xl bg-slate-900 px-4 py-3 text-white shadow-lg dark:bg-slate-100 dark:text-slate-950"
         >
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-300">{TYPE_LABEL[t.type]}</p>
-            <p className="text-sm font-medium truncate">{t.title}</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold text-slate-300 dark:text-slate-600">{TYPE_LABEL[t.type]}</p>
+            <p className="truncate text-sm font-medium">{t.title}</p>
           </div>
         </div>
       ))}

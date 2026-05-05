@@ -7,7 +7,8 @@
     "build": "pnpm --filter backend build && pnpm --filter frontend build",
     "lint": "pnpm --filter backend lint && pnpm --filter frontend lint",
     "typecheck": "pnpm --filter backend typecheck && pnpm --filter frontend typecheck",
-    "test": "pnpm --filter backend test && pnpm --filter frontend test"
+    "test": "pnpm --filter backend test && pnpm --filter frontend test",
+    "db:seed": "pnpm --filter backend db:seed"
   },
   "devDependencies": {
     "concurrently": "^9.0.0"
