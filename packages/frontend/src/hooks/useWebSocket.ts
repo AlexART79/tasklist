@@ -19,11 +19,13 @@ export function useWebSocket(): UseWebSocketReturn {
     wsRef.current = ws;
 
     ws.onopen = () => {
+      console.log('[WS] connected');
       ws.send(JSON.stringify({ type: 'subscribe', payload: { types: ['overdue', 'due_soon'] } }));
     };
 
     ws.onmessage = (event: MessageEvent<string>) => {
       const msg = JSON.parse(event.data) as { type: string; payload: NotificationItem[] };
+      console.log('[WS] message received:', msg.type, Array.isArray(msg.payload) ? `(${msg.payload.length} items)` : '');
       if (msg.type === 'notifications') {
         setNotifications((prev) => {
           const existingIds = new Set(prev.map((n) => n.taskId));
@@ -33,7 +35,13 @@ export function useWebSocket(): UseWebSocketReturn {
       }
     };
 
-    ws.onerror = () => {};
+    ws.onerror = (event) => {
+      console.error('[WS] error', event);
+    };
+
+    ws.onclose = (event) => {
+      console.log('[WS] closed — code:', event.code, 'reason:', event.reason || '(none)', 'clean:', event.wasClean);
+    };
 
     return () => {
       ws.close();

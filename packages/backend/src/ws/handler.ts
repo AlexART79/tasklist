@@ -1,8 +1,8 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import type { IncomingMessage } from 'http';
 import type { Duplex } from 'stream';
-import parseCookie from 'cookie';
-import cookieSignature from 'cookie-signature';
+import * as cookie from 'cookie';
+import * as cookieSignature from 'cookie-signature';
 import type Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { eq, type InferSelectModel } from 'drizzle-orm';
@@ -32,32 +32,52 @@ export function buildWsHandler({ sqlite, db, intervalMs = DEFAULT_INTERVAL_MS }:
   const wss = new WebSocketServer({ noServer: true });
 
   function handleUpgrade(req: IncomingMessage, socket: Duplex, head: Buffer) {
-    const rawCookies = parseCookie.parse(req.headers.cookie ?? '');
+    console.log('[WS] upgrade request — cookie header:', req.headers.cookie ? `present (${req.headers.cookie.length} chars)` : 'MISSING');
+    const rawCookies = cookie.parse(req.headers.cookie ?? '');
     const rawSid = rawCookies['connect.sid'];
-    if (!rawSid) return reject401(socket);
+    if (!rawSid) {
+      console.log('[WS] rejected: no connect.sid cookie. All cookie keys:', Object.keys(rawCookies));
+      return reject401(socket);
+    }
 
     const sid = rawSid.startsWith('s:')
       ? cookieSignature.unsign(rawSid.slice(2), process.env.SESSION_SECRET ?? 'dev-secret')
       : false;
-    if (!sid) return reject401(socket);
+    if (!sid) {
+      console.log('[WS] rejected: invalid session signature (secret mismatch?)');
+      return reject401(socket);
+    }
 
     store.get(sid, (err, session) => {
-      if (err || !session) return reject401(socket);
+      if (err || !session) {
+        console.log('[WS] rejected: session not found in store', err?.message ?? '');
+        return reject401(socket);
+      }
 
       const passportUserId = (session as unknown as { passport?: { user?: string } })
         ?.passport?.user;
-      if (!passportUserId) return reject401(socket);
+      if (!passportUserId) {
+        console.log('[WS] rejected: no passport.user in session');
+        return reject401(socket);
+      }
 
       db.select()
         .from(users)
         .where(eq(users.id, passportUserId))
         .then(([user]) => {
-          if (!user) return reject401(socket);
+          if (!user) {
+            console.log('[WS] rejected: user not in DB, passportUserId=', passportUserId);
+            return reject401(socket);
+          }
+          console.log('[WS] authenticated userId:', user.id);
           wss.handleUpgrade(req, socket, head, (ws) => {
             wss.emit('connection', ws, req, user);
           });
         })
-        .catch(() => reject401(socket));
+        .catch((e) => {
+          console.error('[WS] DB error during auth:', e);
+          reject401(socket);
+        });
     });
   }
 
@@ -69,17 +89,23 @@ export function buildWsHandler({ sqlite, db, intervalMs = DEFAULT_INTERVAL_MS }:
       const filtered = items
         .filter((n) => subscribedTypes.includes(n.type))
         .filter((n) => !ackedIds.has(n.taskId));
-      if (filtered.length === 0) return;
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'notifications', payload: filtered }));
+        console.log('[WS] sent', filtered.length, 'notifications to userId:', user.id);
       }
     }
 
     function pushNotifications() {
-      if (ws.readyState !== WebSocket.OPEN) return;
+      if (ws.readyState !== WebSocket.OPEN) {
+        console.log('[WS] pushNotifications skipped: socket not open, state=', ws.readyState);
+        return;
+      }
       queryNotifications(db, user.id)
-        .then(sendNotifications)
-        .catch(() => {});
+        .then((items) => {
+          console.log('[WS] queryNotifications result:', items.length, 'items for userId:', user.id);
+          sendNotifications(items);
+        })
+        .catch((e) => console.error('[WS] queryNotifications error:', e));
     }
 
     pushNotifications();

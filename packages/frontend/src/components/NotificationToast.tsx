@@ -5,11 +5,16 @@ import type { NotificationItem } from '../types/notifications';
 const TYPE_LABEL = { overdue: 'Overdue', due_soon: 'Due soon' } as const;
 
 export default function NotificationToast() {
-  const { notifications } = useNotifications();
+  const { notifications, notificationPanelOpen } = useNotifications();
   const [toasts, setToasts] = useState<NotificationItem[]>([]);
   const seenIds = useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    if (notificationPanelOpen) {
+      notifications.forEach((n) => seenIds.current.add(n.taskId));
+      return;
+    }
+
     const newOnes = notifications.filter((n) => !seenIds.current.has(n.taskId));
     if (newOnes.length === 0) return;
 
@@ -21,7 +26,7 @@ export default function NotificationToast() {
       setToasts((prev) => prev.filter((t) => !ids.includes(t.taskId)));
     }, 4000);
     return () => clearTimeout(timer);
-  }, [notifications]);
+  }, [notifications, notificationPanelOpen]);
 
   if (toasts.length === 0) return null;
 

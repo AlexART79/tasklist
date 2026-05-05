@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNotifications } from '../contexts/NotificationContext';
 
 const TYPE_LABEL = { overdue: 'Overdue', due_soon: 'Due soon' } as const;
@@ -8,8 +8,14 @@ const TYPE_CLASSES = {
 } as const;
 
 export default function NotificationBell() {
-  const { notifications, unreadCount, dismiss, markAllRead } = useNotifications();
-  const [open, setOpen] = useState(false);
+  const {
+    notifications,
+    unreadCount,
+    dismiss,
+    markAllRead,
+    notificationPanelOpen: open,
+    setNotificationPanelOpen: setOpen,
+  } = useNotifications();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,10 +30,9 @@ export default function NotificationBell() {
   }, [open]);
 
   function handleToggle() {
-    setOpen((v) => {
-      if (!v) markAllRead();
-      return !v;
-    });
+    const nextOpen = !open;
+    if (nextOpen) markAllRead();
+    setOpen(nextOpen);
   }
 
   return (
