@@ -97,6 +97,61 @@ pnpm --filter backend db:seed     # seed demo data (added in Phase 6)
 | `GITHUB_CALLBACK_URL` | backend | GitHub OAuth callback URL |
 | `VITE_API_BASE_URL` | frontend | Backend base URL (used in production builds) |
 | `WS_INTERVAL_MS` | backend | WebSocket notification push interval in ms (default: 60000) |
+| `LOG_LEVEL` | backend | Backend log level: `debug`, `info`, `warn`, `error`, or `silent` |
+| `LOG_FORMAT` | backend | Backend console log format: `pretty` or `json` |
+| `LOG_TO_CONSOLE` | backend | Write backend logs to console output |
+| `LOG_TO_FILE` | backend | Write backend logs to local files |
+| `LOG_DIR` | backend | Backend log directory (default: `logs/backend`) |
+| `VITE_LOG_LEVEL` | frontend | Frontend log level: `debug`, `info`, `warn`, `error`, or `silent` |
+| `VITE_LOG_FORMAT` | frontend | Browser console log format: `pretty` or `json` |
+| `VITE_LOG_BUFFER_SIZE` | frontend | Number of recent browser log entries kept in memory |
+| `VITE_LOG_DEBUG_PANEL` | frontend | Expose `window.__APP_LOGS__` helpers for local debugging |
+
+---
+
+## Logging
+
+Backend logs are written to the console and, by default, to ignored local files:
+
+```text
+logs/backend/app.log
+logs/backend/error.log
+```
+
+Configure backend logging in `packages/backend/.env`:
+
+```bash
+LOG_LEVEL=debug
+LOG_FORMAT=pretty
+LOG_TO_CONSOLE=true
+LOG_TO_FILE=true
+LOG_DIR=logs/backend
+```
+
+Use `LOG_FORMAT=json` for searchable structured logs, especially in production or Docker. In Docker, backend logs are also available through normal container output:
+
+```bash
+docker compose logs backend
+```
+
+Frontend logs are written to the browser console and kept in a bounded in-memory buffer. Configure them in `packages/frontend/.env`:
+
+```bash
+VITE_LOG_LEVEL=debug
+VITE_LOG_FORMAT=pretty
+VITE_LOG_BUFFER_SIZE=500
+VITE_LOG_DEBUG_PANEL=true
+```
+
+When `VITE_LOG_DEBUG_PANEL=true`, open the browser console and use:
+
+```js
+window.__APP_LOGS__.get()
+window.__APP_LOGS__.export()
+window.__APP_LOGS__.clear()
+```
+
+`export()` returns JSON that can be attached to an issue report. Frontend logs stay in the browser and are not sent to the backend.
 
 ---
 

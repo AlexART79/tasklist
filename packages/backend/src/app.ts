@@ -11,6 +11,7 @@ import { buildAuthRouter } from './routes/auth';
 import { buildListsRouter } from './routes/lists';
 import { buildTasksRouter } from './routes/tasks';
 import { sqlite as defaultSqlite, db as defaultDb } from './db';
+import { buildRequestLogger, errorLogger } from './middleware/logging';
 
 interface AppOptions {
   sqlite?: Database.Database;
@@ -31,6 +32,7 @@ export function buildApp(options?: AppOptions) {
   if (process.env.GITHUB_CLIENT_ID) passport.use(buildGithubStrategy());
   app.use(passport.initialize());
   app.use(passport.session());
+  app.use(buildRequestLogger());
 
   app.use(buildAuthRouter(dbInst));
   app.use(buildListsRouter(dbInst));
@@ -39,6 +41,8 @@ export function buildApp(options?: AppOptions) {
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
   });
+
+  app.use(errorLogger);
 
   return app;
 }

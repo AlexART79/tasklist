@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { fetchLists, createList, renameList, deleteList, type List } from '../api/lists';
+import { logger } from '../logger';
 
 interface Props {
   selectedListId: string | null;
@@ -16,7 +17,7 @@ export default function Sidebar({ selectedListId, onSelect }: Props) {
   const editInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetchLists().then(setLists).catch(console.error);
+    fetchLists().then(setLists).catch((error) => logger.error('Failed to load lists', { error }));
   }, []);
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export default function Sidebar({ selectedListId, onSelect }: Props) {
       setLists((prev) => [...prev, list]);
       onSelect(list.id);
     } catch (e) {
-      console.error(e);
+      logger.error('Failed to create list', { error: e });
     }
     setCreating(false);
     setNewName('');
@@ -52,7 +53,7 @@ export default function Sidebar({ selectedListId, onSelect }: Props) {
         const updated = await renameList(id, name);
         setLists((prev) => prev.map((l) => (l.id === id ? updated : l)));
       } catch (e) {
-        console.error(e);
+        logger.error('Failed to rename list', { error: e, listId: id });
       }
     }
     setEditingId(null);
@@ -66,7 +67,7 @@ export default function Sidebar({ selectedListId, onSelect }: Props) {
       setLists((prev) => prev.filter((l) => l.id !== id));
       if (selectedListId === id) onSelect('');
     } catch (e) {
-      console.error(e);
+      logger.error('Failed to delete list', { error: e, listId: id });
     }
   }
 

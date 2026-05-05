@@ -38,7 +38,6 @@ export function buildAuthRouter(db: typeof DbType = defaultDb) {
   if (process.env.NODE_ENV === 'test') {
     router.get('/auth/test-login', async (req, res, next) => {
       try {
-        const { eq } = await import('drizzle-orm');
         const seed = req.query.seed as string | undefined;
         const userId = seed ? `test-user-${seed}` : 'test-user-id';
         const providerUserId = seed ? `google-test-id-${seed}` : 'google-test-id';

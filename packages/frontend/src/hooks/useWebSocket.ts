@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { NotificationItem } from '../types/notifications';
+import { logger } from '../logger';
 
 export type UseWebSocketReturn = {
   notifications: NotificationItem[];
@@ -14,37 +15,49 @@ export function useWebSocket(): UseWebSocketReturn {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
-    wsRef.current = ws;
+    let ws: WebSocket | null = null;
 
-    ws.onopen = () => {
-      console.log('[WS] connected');
-      ws.send(JSON.stringify({ type: 'subscribe', payload: { types: ['overdue', 'due_soon'] } }));
-    };
+    const connectTimer = window.setTimeout(() => {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+      wsRef.current = ws;
 
-    ws.onmessage = (event: MessageEvent<string>) => {
-      const msg = JSON.parse(event.data) as { type: string; payload: NotificationItem[] };
-      console.log('[WS] message received:', msg.type, Array.isArray(msg.payload) ? `(${msg.payload.length} items)` : '');
-      if (msg.type === 'notifications') {
-        setNotifications((prev) => {
-          const existingIds = new Set(prev.map((n) => n.taskId));
-          const newItems = msg.payload.filter((n) => !existingIds.has(n.taskId));
-          return newItems.length > 0 ? [...prev, ...newItems] : prev;
+      ws.onopen = () => {
+        logger.info('WebSocket connected');
+        ws?.send(JSON.stringify({ type: 'subscribe', payload: { types: ['overdue', 'due_soon'] } }));
+      };
+
+      ws.onmessage = (event: MessageEvent<string>) => {
+        const msg = JSON.parse(event.data) as { type: string; payload: NotificationItem[] };
+        logger.debug('WebSocket message received', {
+          type: msg.type,
+          count: Array.isArray(msg.payload) ? msg.payload.length : undefined,
         });
-      }
-    };
+        if (msg.type === 'notifications') {
+          setNotifications((prev) => {
+            const existingIds = new Set(prev.map((n) => n.taskId));
+            const newItems = msg.payload.filter((n) => !existingIds.has(n.taskId));
+            return newItems.length > 0 ? [...prev, ...newItems] : prev;
+          });
+        }
+      };
 
-    ws.onerror = (event) => {
-      console.error('[WS] error', event);
-    };
+      ws.onerror = (event) => {
+        logger.error('WebSocket error', { event });
+      };
 
-    ws.onclose = (event) => {
-      console.log('[WS] closed — code:', event.code, 'reason:', event.reason || '(none)', 'clean:', event.wasClean);
-    };
+      ws.onclose = (event) => {
+        logger.info('WebSocket closed', {
+          code: event.code,
+          reason: event.reason || '(none)',
+          wasClean: event.wasClean,
+        });
+      };
+    });
 
     return () => {
-      ws.close();
+      window.clearTimeout(connectTimer);
+      ws?.close();
       wsRef.current = null;
     };
   }, []);

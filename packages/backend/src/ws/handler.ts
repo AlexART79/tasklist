@@ -11,6 +11,7 @@ import { users } from '../db/schema';
 import { buildSqliteSessionStore } from '../auth/sessionStore';
 import { queryNotifications } from './queryNotifications';
 import type { ClientMessage, NotificationItem } from './types';
+import { logger } from '../logger';
 
 type DrizzleDb = ReturnType<typeof drizzle<typeof schema>>;
 
@@ -32,11 +33,11 @@ export function buildWsHandler({ sqlite, db, intervalMs = DEFAULT_INTERVAL_MS }:
   const wss = new WebSocketServer({ noServer: true });
 
   function handleUpgrade(req: IncomingMessage, socket: Duplex, head: Buffer) {
-    console.log('[WS] upgrade request — cookie header:', req.headers.cookie ? `present (${req.headers.cookie.length} chars)` : 'MISSING');
+    logger.debug({ hasCookieHeader: Boolean(req.headers.cookie) }, 'WebSocket upgrade requested');
     const rawCookies = cookie.parse(req.headers.cookie ?? '');
     const rawSid = rawCookies['connect.sid'];
     if (!rawSid) {
-      console.log('[WS] rejected: no connect.sid cookie. All cookie keys:', Object.keys(rawCookies));
+      logger.warn({ cookieKeys: Object.keys(rawCookies) }, 'WebSocket rejected: missing session cookie');
       return reject401(socket);
     }
 
@@ -44,20 +45,20 @@ export function buildWsHandler({ sqlite, db, intervalMs = DEFAULT_INTERVAL_MS }:
       ? cookieSignature.unsign(rawSid.slice(2), process.env.SESSION_SECRET ?? 'dev-secret')
       : false;
     if (!sid) {
-      console.log('[WS] rejected: invalid session signature (secret mismatch?)');
+      logger.warn('WebSocket rejected: invalid session signature');
       return reject401(socket);
     }
 
     store.get(sid, (err, session) => {
       if (err || !session) {
-        console.log('[WS] rejected: session not found in store', err?.message ?? '');
+        logger.warn({ err }, 'WebSocket rejected: session not found');
         return reject401(socket);
       }
 
       const passportUserId = (session as unknown as { passport?: { user?: string } })
         ?.passport?.user;
       if (!passportUserId) {
-        console.log('[WS] rejected: no passport.user in session');
+        logger.warn('WebSocket rejected: missing authenticated user in session');
         return reject401(socket);
       }
 
@@ -66,16 +67,16 @@ export function buildWsHandler({ sqlite, db, intervalMs = DEFAULT_INTERVAL_MS }:
         .where(eq(users.id, passportUserId))
         .then(([user]) => {
           if (!user) {
-            console.log('[WS] rejected: user not in DB, passportUserId=', passportUserId);
+            logger.warn({ passportUserId }, 'WebSocket rejected: user not found');
             return reject401(socket);
           }
-          console.log('[WS] authenticated userId:', user.id);
+          logger.info({ userId: user.id }, 'WebSocket authenticated');
           wss.handleUpgrade(req, socket, head, (ws) => {
             wss.emit('connection', ws, req, user);
           });
         })
         .catch((e) => {
-          console.error('[WS] DB error during auth:', e);
+          logger.error({ err: e }, 'WebSocket auth database error');
           reject401(socket);
         });
     });
@@ -91,21 +92,21 @@ export function buildWsHandler({ sqlite, db, intervalMs = DEFAULT_INTERVAL_MS }:
         .filter((n) => !ackedIds.has(n.taskId));
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'notifications', payload: filtered }));
-        console.log('[WS] sent', filtered.length, 'notifications to userId:', user.id);
+        logger.debug({ count: filtered.length, userId: user.id }, 'WebSocket notifications sent');
       }
     }
 
     function pushNotifications() {
       if (ws.readyState !== WebSocket.OPEN) {
-        console.log('[WS] pushNotifications skipped: socket not open, state=', ws.readyState);
+        logger.debug({ state: ws.readyState, userId: user.id }, 'WebSocket notification push skipped');
         return;
       }
       queryNotifications(db, user.id)
         .then((items) => {
-          console.log('[WS] queryNotifications result:', items.length, 'items for userId:', user.id);
+          logger.debug({ count: items.length, userId: user.id }, 'WebSocket notifications queried');
           sendNotifications(items);
         })
-        .catch((e) => console.error('[WS] queryNotifications error:', e));
+        .catch((e) => logger.error({ err: e, userId: user.id }, 'WebSocket notification query failed'));
     }
 
     pushNotifications();

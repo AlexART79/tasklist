@@ -3,6 +3,7 @@ import http from 'http';
 import { app } from './app';
 import { sqlite, db } from './db';
 import { buildWsHandler } from './ws/handler';
+import { logger } from './logger';
 
 const port = process.env.PORT ?? 3001;
 const server = http.createServer(app);
@@ -14,5 +15,5 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 server.listen(port, () => {
-  console.log(`Backend listening on port ${port}`);
+  logger.info({ port }, 'Backend listening');
 });

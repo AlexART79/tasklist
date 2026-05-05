@@ -2,6 +2,16 @@ import { Strategy as GitHubStrategy } from 'passport-github2';
 import { db } from '../db';
 import { users } from '../db/schema';
 
+interface GithubProfile {
+  id: string;
+  username?: string;
+  displayName?: string;
+  emails?: Array<{ value?: string }>;
+  photos?: Array<{ value?: string }>;
+}
+
+type VerifyDone = (error: Error | null, user?: Express.User) => void;
+
 export function buildGithubStrategy() {
   return new GitHubStrategy(
     {
@@ -9,7 +19,7 @@ export function buildGithubStrategy() {
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
       callbackURL: process.env.GITHUB_CALLBACK_URL!,
     },
-    async (_accessToken: string, _refreshToken: string, profile: any, done: any) => {
+    async (_accessToken: string, _refreshToken: string, profile: GithubProfile, done: VerifyDone) => {
       try {
         const [user] = await db
           .insert(users)
