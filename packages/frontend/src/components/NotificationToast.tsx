@@ -35,7 +35,7 @@ export default function NotificationToast() {
       {toasts.map((t) => (
         <div
           key={t.taskId}
-          className="flex items-start gap-3 rounded-xl bg-slate-900 text-white px-4 py-3 shadow-lg max-w-xs"
+          className="flex items-start gap-3 rounded-xl bg-slate-900 dark:bg-slate-700 text-white px-4 py-3 shadow-lg max-w-xs"
         >
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-slate-300">{TYPE_LABEL[t.type]}</p>

@@ -26,8 +26,9 @@ const PRIORITY_OPTIONS = [
 ];
 
 const selectBase =
-  'rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 ' +
-  'outline-none focus:ring-2 focus:ring-indigo-500 transition-colors cursor-pointer';
+  'rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 ' +
+  'px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 ' +
+  'outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors cursor-pointer';
 
 export default function TaskFilters({
   filterState,
@@ -56,9 +57,9 @@ export default function TaskFilters({
           value={filterState.search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search tasks…"
-          className="w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 py-1.5 text-sm
-                     text-slate-700 placeholder:text-slate-400 outline-none
-                     focus:ring-2 focus:ring-indigo-500 transition-colors"
+          className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-9 pr-3 py-1.5 text-sm
+                     text-slate-700 dark:text-slate-300 placeholder:text-slate-400 outline-none
+                     focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
         />
       </div>
 
@@ -95,7 +96,8 @@ export default function TaskFilters({
         <button
           onClick={onClear}
           className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium
-                     text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                     text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

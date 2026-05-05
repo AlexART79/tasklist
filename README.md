@@ -106,6 +106,7 @@ pnpm --filter backend db:seed     # seed demo data (added in Phase 6)
 | `VITE_LOG_FORMAT` | frontend | Browser console log format: `pretty` or `json` |
 | `VITE_LOG_BUFFER_SIZE` | frontend | Number of recent browser log entries kept in memory |
 | `VITE_LOG_DEBUG_PANEL` | frontend | Expose `window.__APP_LOGS__` helpers for local debugging |
+| `SEED_EMAIL` | backend | Email of the user to seed data for (default: `alexart79@gmail.com`) |
 
 ---
 
@@ -152,6 +153,30 @@ window.__APP_LOGS__.clear()
 ```
 
 `export()` returns JSON that can be attached to an issue report. Frontend logs stay in the browser and are not sent to the backend.
+
+---
+
+## Seed data
+
+The seed script creates two demo lists with tasks so reviewers can explore the app without manually adding data. Log in via OAuth first (once), then run:
+
+```bash
+pnpm --filter backend db:seed
+```
+
+Override the target email if it differs from the default:
+
+```bash
+SEED_EMAIL=you@example.com pnpm --filter backend db:seed
+```
+
+The script is idempotent — re-running it resets the seed tasks without duplicating them.
+
+---
+
+## API reference
+
+Full endpoint documentation (methods, paths, request/response shapes, error codes): [`docs/api.md`](docs/api.md).
 
 ---
 

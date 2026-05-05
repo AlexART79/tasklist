@@ -16,15 +16,15 @@ const STATUS_LABEL: Record<Task['status'], string> = {
 };
 
 const STATUS_CLASSES: Record<Task['status'], string> = {
-  todo: 'bg-slate-100 text-slate-600',
-  in_progress: 'bg-indigo-100 text-indigo-700',
-  done: 'bg-green-100 text-green-700',
+  todo: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
+  in_progress: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
+  done: 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300',
 };
 
 const PRIORITY_CLASSES: Record<Task['priority'], string> = {
-  low: 'bg-slate-100 text-slate-500',
-  medium: 'bg-amber-100 text-amber-700',
-  high: 'bg-red-100 text-red-600',
+  low: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400',
+  medium: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+  high: 'bg-red-100 text-red-600 dark:bg-red-950 dark:text-red-400',
 };
 
 function formatDate(iso: string) {
@@ -90,10 +90,10 @@ export default function TaskList({ listId }: Props) {
   return (
     <div className="flex-1 flex flex-col overflow-auto">
       <div className="flex items-center justify-between px-6 pt-6 pb-3 shrink-0">
-        <h2 className="text-sm font-semibold text-slate-900">Tasks</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Tasks</h2>
         <button
           onClick={openCreate}
-          className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 transition-colors"
+          className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -118,31 +118,31 @@ export default function TaskList({ listId }: Props) {
         </div>
       ) : tasks.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
-          <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
           {hasActiveFilters
-            ? <p className="text-slate-500 text-sm">No tasks match your filters.</p>
-            : <p className="text-slate-500 text-sm">No tasks in this list — add one to get started.</p>
+            ? <p className="text-slate-500 dark:text-slate-400 text-sm">No tasks match your filters.</p>
+            : <p className="text-slate-500 dark:text-slate-400 text-sm">No tasks in this list — add one to get started.</p>
           }
         </div>
       ) : (
         <ul className="flex flex-col gap-2 px-6 pb-6">
           {tasks.map((task) => (
-            <li key={task.id} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-start gap-3">
+            <li key={task.id} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 flex items-start gap-3">
               <div className="flex-1 min-w-0">
-                <p className={`text-sm font-medium text-slate-900 ${task.status === 'done' ? 'line-through text-slate-400' : ''}`}>
+                <p className={`text-sm font-medium ${task.status === 'done' ? 'line-through text-slate-400 dark:text-slate-600' : 'text-slate-900 dark:text-slate-100'}`}>
                   {task.title}
                 </p>
                 {task.description && (
-                  <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{task.description}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{task.description}</p>
                 )}
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <button
                     onClick={() => cycleStatus(task)}
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${STATUS_CLASSES[task.status]} hover:opacity-80`}
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${STATUS_CLASSES[task.status]}`}
                     title="Click to change status"
                   >
                     {STATUS_LABEL[task.status]}
@@ -151,7 +151,7 @@ export default function TaskList({ listId }: Props) {
                     {task.priority}
                   </span>
                   {task.dueDate && (
-                    <span className={`text-xs ${isOverdue(task.dueDate) && task.status !== 'done' ? 'text-red-500 font-medium' : 'text-slate-500'}`}>
+                    <span className={`text-xs ${isOverdue(task.dueDate) && task.status !== 'done' ? 'text-red-500 font-medium' : 'text-slate-500 dark:text-slate-400'}`}>
                       {formatDate(task.dueDate)}
                     </span>
                   )}
@@ -161,7 +161,7 @@ export default function TaskList({ listId }: Props) {
               <div className="flex items-center gap-1 shrink-0">
                 <button
                   onClick={() => openEdit(task)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   title="Edit"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -170,7 +170,7 @@ export default function TaskList({ listId }: Props) {
                 </button>
                 <button
                   onClick={() => handleDelete(task)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   title="Delete"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

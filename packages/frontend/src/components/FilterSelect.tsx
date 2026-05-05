@@ -32,9 +32,10 @@ export default function FilterSelect<T extends string>({
       <button
         onClick={onToggleOpen}
         className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition-colors
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500
           ${isActive
-            ? 'border-indigo-300 bg-indigo-50 text-indigo-700'
-            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'}`}
+            ? 'border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'}`}
       >
         {label}
         {isActive && (
@@ -50,11 +51,11 @@ export default function FilterSelect<T extends string>({
 
       {open && (
         <div className="absolute left-0 top-full mt-1 z-10 min-w-[160px] rounded-xl
-                        border border-slate-200 bg-white shadow-lg py-1">
+                        border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg py-1">
           {options.map(opt => (
             <label
               key={opt.value}
-              className="flex items-center gap-2.5 px-3 py-1.5 cursor-pointer hover:bg-slate-50"
+              className="flex items-center gap-2.5 px-3 py-1.5 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700"
             >
               <input
                 type="checkbox"
@@ -62,7 +63,7 @@ export default function FilterSelect<T extends string>({
                 onChange={() => onToggle(opt.value)}
                 className="accent-indigo-600 w-3.5 h-3.5 cursor-pointer"
               />
-              <span className="text-sm text-slate-700">{opt.label}</span>
+              <span className="text-sm text-slate-700 dark:text-slate-300">{opt.label}</span>
             </label>
           ))}
         </div>

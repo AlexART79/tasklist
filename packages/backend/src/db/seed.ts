@@ -114,12 +114,84 @@ async function seed() {
     },
   ]);
 
-  console.log('Seeded tasks:');
+  console.log('Seeded "Notification Demo" tasks:');
   console.log('  2 overdue  (should trigger notifications)');
   console.log('  3 due soon — today, tomorrow, in 3 days  (should trigger notifications)');
   console.log('  1 future   — in 14 days  (no notification yet)');
   console.log('  1 done     — overdue but status=done  (no notification)');
   console.log('\nOpen the app and the bell icon should show 5 notifications.');
+
+  // Second list: general tasks for UI review
+  const generalListId = `seed-general-list-${user.id}`;
+  await db
+    .insert(lists)
+    .values({ id: generalListId, userId: user.id, name: 'General Tasks' })
+    .onConflictDoNothing();
+
+  await db.delete(tasks).where(
+    inArray(tasks.id, [
+      'seed-general-1',
+      'seed-general-2',
+      'seed-general-3',
+      'seed-general-4',
+      'seed-general-5',
+    ]),
+  );
+
+  await db.insert(tasks).values([
+    {
+      id: 'seed-general-1',
+      listId: generalListId,
+      userId: user.id,
+      title: 'Design onboarding flow',
+      description: 'Wireframes and user stories for the improved signup experience.',
+      status: 'in_progress',
+      dueDate: daysFromNow(7),
+      priority: 'high',
+    },
+    {
+      id: 'seed-general-2',
+      listId: generalListId,
+      userId: user.id,
+      title: 'Write auth module unit tests',
+      description: null,
+      status: 'todo',
+      dueDate: daysFromNow(10),
+      priority: 'medium',
+    },
+    {
+      id: 'seed-general-3',
+      listId: generalListId,
+      userId: user.id,
+      title: 'Refactor DB connection pooling',
+      description: null,
+      status: 'todo',
+      dueDate: null,
+      priority: 'low',
+    },
+    {
+      id: 'seed-general-4',
+      listId: generalListId,
+      userId: user.id,
+      title: 'Update project README',
+      description: 'Docker setup and environment variable documentation.',
+      status: 'done',
+      dueDate: daysFromNow(-3),
+      priority: 'low',
+    },
+    {
+      id: 'seed-general-5',
+      listId: generalListId,
+      userId: user.id,
+      title: 'Conduct security audit',
+      description: null,
+      status: 'todo',
+      dueDate: daysFromNow(21),
+      priority: 'high',
+    },
+  ]);
+
+  console.log('\nSeeded "General Tasks" list with 5 tasks (various statuses and priorities).');
 }
 
 seed()
