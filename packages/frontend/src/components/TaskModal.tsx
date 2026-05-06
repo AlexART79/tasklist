@@ -60,14 +60,14 @@ export default function TaskModal({ listId, task, onClose, onSaved }: Props) {
   }
 
   const inputClass =
-    'rounded-lg border px-3 py-2 text-sm text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors dark:placeholder:text-slate-500';
+    'rounded-lg border px-3 py-2 text-sm text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-700 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors dark:placeholder:text-slate-400';
 
   return (
     <div
-      className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 sm:p-4"
+      className="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 sm:p-4"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl p-6 w-full sm:max-w-md shadow-lg overflow-y-auto max-h-[95dvh] sm:max-h-[90vh]">
+      <div className="bg-white dark:bg-slate-800 rounded-t-2xl sm:rounded-2xl p-6 w-full sm:max-w-md shadow-2xl dark:shadow-black/60 ring-1 ring-black/5 dark:ring-white/10 overflow-y-auto max-h-[95dvh] sm:max-h-[90vh]">
         <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-5">
           {task ? 'Edit task' : 'New task'}
         </h2>
@@ -79,7 +79,7 @@ export default function TaskModal({ listId, task, onClose, onSaved }: Props) {
               ref={titleRef}
               value={title}
               onChange={(e) => { setTitle(e.target.value); if (titleError) setTitleError(''); }}
-              className={`${inputClass} ${titleError ? 'border-red-400' : 'border-slate-200 dark:border-slate-700'}`}
+              className={`${inputClass} ${titleError ? 'border-red-400' : 'border-slate-200 dark:border-slate-600'}`}
               placeholder="Task title"
             />
             {titleError && <p className="text-xs text-red-500">{titleError}</p>}
@@ -91,7 +91,7 @@ export default function TaskModal({ listId, task, onClose, onSaved }: Props) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className={`${inputClass} border-slate-200 dark:border-slate-700 resize-none`}
+              className={`${inputClass} border-slate-200 dark:border-slate-600 resize-none`}
               placeholder="Optional description"
             />
           </div>
@@ -102,7 +102,7 @@ export default function TaskModal({ listId, task, onClose, onSaved }: Props) {
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as Task['status'])}
-                className={`${inputClass} border-slate-200 dark:border-slate-700`}
+                className={`${inputClass} border-slate-200 dark:border-slate-600`}
               >
                 <option value="todo">To do</option>
                 <option value="in_progress">In progress</option>
@@ -115,7 +115,7 @@ export default function TaskModal({ listId, task, onClose, onSaved }: Props) {
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as Task['priority'])}
-                className={`${inputClass} border-slate-200 dark:border-slate-700`}
+                className={`${inputClass} border-slate-200 dark:border-slate-600`}
               >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -130,7 +130,7 @@ export default function TaskModal({ listId, task, onClose, onSaved }: Props) {
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className={`${inputClass} border-slate-200 dark:border-slate-700`}
+              className={`${inputClass} border-slate-200 dark:border-slate-600`}
             />
           </div>
 
@@ -138,7 +138,7 @@ export default function TaskModal({ listId, task, onClose, onSaved }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="flex-1 rounded-lg border border-slate-200 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             >
               Cancel
             </button>

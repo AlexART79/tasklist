@@ -12,10 +12,13 @@ RUN pnpm install --frozen-lockfile --filter=backend
 COPY packages/backend/ ./packages/backend/
 RUN pnpm --filter=backend build
 
+# Create self-contained production bundle (resolves pnpm virtual-store symlinks)
+RUN pnpm deploy --filter=backend --prod /app/deploy
+
 FROM node:22-alpine AS runtime
 WORKDIR /app
+# pnpm deploy gives us node_modules without symlinks; dist is excluded by .gitignore so copy it explicitly
+COPY --from=builder /app/deploy .
 COPY --from=builder /app/packages/backend/dist ./dist
-COPY --from=builder /app/packages/backend/node_modules ./node_modules
-COPY --from=builder /app/packages/backend/package.json ./
 EXPOSE 3001
 CMD ["node", "dist/index.js"]

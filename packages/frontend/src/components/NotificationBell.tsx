@@ -63,14 +63,14 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="fixed right-4 top-14 z-20 w-80 max-w-[calc(100vw-2rem)] rounded-xl sm:absolute sm:right-0 sm:top-full sm:mt-2 sm:max-w-none border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
+        <div className="fixed inset-x-2 top-16 bottom-2 z-20 rounded-xl sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
             <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Notifications</p>
           </div>
           {notifications.length === 0 ? (
             <p className="px-4 py-6 text-sm text-slate-500 dark:text-slate-400 text-center">No notifications</p>
           ) : (
-            <ul className="max-h-[calc(100dvh-8rem)] sm:max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-600">
+            <ul className="overflow-y-auto sm:max-h-80 divide-y divide-slate-100 dark:divide-slate-800 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-600">
               {notifications.map((n) => (
                 <li key={n.taskId} className="flex items-start gap-3 px-4 py-3">
                   <div className="flex-1 min-w-0">
