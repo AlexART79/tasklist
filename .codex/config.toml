@@ -1,0 +1,8 @@
+[mcp_servers.playwright]
+args = [
+    "run",
+    "-i",
+    "--rm",
+    "mcp/playwright",
+]
+command = "docker"
